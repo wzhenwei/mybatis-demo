@@ -1,14 +1,18 @@
 package tk.mybatis.simple.test;
 
+import netscape.security.Privilege;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.Assert;
 import org.junit.Test;
 import tk.mybatis.simple.mapper.BaseMapperTest;
+import tk.mybatis.simple.mapper.PrivilegeMapper;
 import tk.mybatis.simple.mapper.UserMapper;
+import tk.mybatis.simple.model.SysPrivilege;
 import tk.mybatis.simple.model.SysRole;
 import tk.mybatis.simple.model.SysUser;
 
 import java.lang.reflect.Proxy;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -72,6 +76,39 @@ public class UserMapperTest extends BaseMapperTest{
         } catch (Exception e) {
             e.printStackTrace();
         }finally {
+            sqlSession.close();
+        }
+    }
+
+    @Test
+    public void testInsert(){
+        SqlSession sqlSession = getSqlSession();
+        try {
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+            //创建一个user对象
+            SysUser user = new SysUser();
+            user.setUserName("test1");
+            user.setUserPassword("123456");
+            user.setUserEmail("TEST@mybatis.tk");
+            user.setUserInfo("testinfo");
+            user.setHeadImg(new byte[]{1,2,3});
+            user.setCreateTime(new Date());
+            int result = userMapper.insert(user);
+            Assert.assertNull(user.getId());
+        } finally {
+            sqlSession.rollback();
+            sqlSession.close();
+        }
+    }
+
+    @Test
+    public void testSelectById2(){
+        SqlSession sqlSession = getSqlSession();
+        try {
+            PrivilegeMapper privilegeMapper = sqlSession.getMapper(PrivilegeMapper.class);
+            SysPrivilege privilege = privilegeMapper.selectById(1L);
+            Assert.assertEquals("用户管理",privilege.getPrivilegeUrl());
+        } finally {
             sqlSession.close();
         }
     }
