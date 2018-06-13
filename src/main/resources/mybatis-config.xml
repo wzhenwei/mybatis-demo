@@ -5,6 +5,7 @@
     <!--配置属性使用LOG4打印日志-->
     <settings>
         <setting name="logImpl" value="LOG4J"/>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
     </settings>
 
     <typeAliases>
@@ -25,5 +26,11 @@
     </environments>
     <mappers>
         <mapper resource="mapper/CountryMapper.xml"/>
+        <mapper resource="mapper/PrivilegeMapper.xml" />
+        <mapper resource="mapper/RoleMapper.xml" />
+        <mapper resource="mapper/RolePrivilegeMapper.xml" />
+        <mapper resource="mapper/UserMapper.xml" />
+        <mapper resource="mapper/UserRoleMapper.xml" />
+        <!--<package name="mapper" />-->
     </mappers>
 </configuration>

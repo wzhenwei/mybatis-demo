@@ -16,23 +16,12 @@ import java.util.List;
  * @author wangzhenwei
  * @date 2018/5/16 17:35
  */
-public class CountryMapperTest {
+public class CountryMapperTest extends BaseMapperTest {
 
-    private static SqlSessionFactory sqlSessionFactory;
-    @BeforeClass
-    public static void init(){
-        try {
-            Reader reader = Resources.getResourceAsReader("mybatis-config.xml");
-            sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Test
     public void testSelectAll(){
-        SqlSession sqlSession = sqlSessionFactory.openSession();
+        SqlSession sqlSession = getSqlSession();
         try {
             List<Country> countryList = sqlSession.selectList("selectAll");
             printCountryList(countryList);
