@@ -12,8 +12,7 @@ import tk.mybatis.simple.model.SysRole;
 import tk.mybatis.simple.model.SysUser;
 
 import java.lang.reflect.Proxy;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author wangzhenwei
@@ -109,6 +108,64 @@ public class UserMapperTest extends BaseMapperTest{
             SysPrivilege privilege = privilegeMapper.selectById(1L);
             Assert.assertEquals("用户管理",privilege.getPrivilegeUrl());
         } finally {
+            sqlSession.close();
+        }
+    }
+
+    @Test
+    public void testSelectByUser(){
+        SqlSession sqlSession = getSqlSession();
+        try {
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+            SysUser query = new SysUser();
+            query.setUserName("ad");
+            List<SysUser> userList = userMapper.selectByUser(query);
+            Assert.assertTrue(userList.size()>0);
+            //只查询用户邮件
+            query = new SysUser();
+            query.setUserEmail("test@mybatis.tk");
+            userList = userMapper.selectByUser(query);
+            Assert.assertTrue(userList.size() >0 );
+            // 当同时查询用户名和邮箱时
+            query = new SysUser();
+            query.setUserName("ad");
+            query.setUserEmail("test@mybatis.tk");
+            userList = userMapper.selectByUser(query);
+            Assert.assertTrue(userList.size() == 0);
+        } finally {
+            sqlSession.close();
+        }
+    }
+
+    @Test
+    public void testSelectByIdList(){
+        SqlSession sqlSession = getSqlSession();
+        try {
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+            List<Long> idList = new ArrayList<>();
+            idList.add(1L);
+            idList.add(1001L);
+            List<SysUser> userList = userMapper.selectByIdList(idList);
+            Assert.assertEquals(2,userList.size());
+        } finally {
+            sqlSession.close();
+        }
+    }
+
+    @Test
+    public void testUpdateByMap(){
+        SqlSession sqlSession = getSqlSession();
+        try{
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+            Map<String , Object> map = new HashMap<>();
+            map.put("id",1L);
+            map.put("user_email" , "test@mybatis.tk");
+            map.put("user_password" , "123456789");
+            userMapper.updateByMap(map);
+            SysUser user = userMapper.selectById(1L);
+            Assert.assertEquals("test@mybaits.tk",user.getUserEmail());
+        }finally {
+            sqlSession.rollback();
             sqlSession.close();
         }
     }

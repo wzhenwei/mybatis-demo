@@ -52,4 +52,117 @@
         #{headImg,jdbcType=BLOB},
         #{createtime,jdbcType=TIMESTAMP})
     </insert>
+
+    <select id="selectByUser" resultType="tk.mybatis.simple.model.SysUser">
+        select id,
+        user_name        as userName,
+        user_password    as userPassword,
+        user_email       as userEmail,
+        user_info        as  userInfo,
+        head_img         as headImg,
+        create_time      as createTime
+        FROM sys_user
+        <where>
+            <if test="userName != null and userName != ''">
+                and user_name like concat('%',#{userName},'%')
+            </if>
+            <if test="userName != null and userName != ''">
+                and user_name LIKE ('%',#{userName},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByIdOrUserName" resultType="tk.mybatis.simple.model.SysUser">
+        select id
+        user_name        as userName,
+        user_password    as userPassword,
+        user_email       as userEmail,
+        user_info        as  userInfo,
+        head_img         as headImg,
+        create_time      as createTime
+        FROM  sys_user
+        WHERE
+        <choose>
+            <when test="userName != null and userName != ''">
+                and user_name = #{userName}
+            </when>
+            <otherwise>
+                and 1=2
+            </otherwise>
+        </choose>
+    </select>
+<update id="updateByIdSelective">
+        update sys_user
+        <set>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="userPassword != null and userPassword != ''">
+                user_password = #{userPassword}
+            </if>
+            <if  test ="userEmail  !=  null  and  userEmail  !=''">
+              user_email = #{userEmail} ,
+            </if>
+            <if  test =" userinfo  !=  null  and  userinfo  !=''">
+             user_info  =  #{userinfo},
+            </if>
+            <if test ="headimg  != null" >
+            head_img  =  #{headimg,  jdbcType=BLOB},
+            </if>
+            id = #{id}
+        </set>
+</update>
+
+    <select id="selectByIdList" resultType="tk.mybatis.simple.model.SysUser">
+        SELECT
+         id,
+         user_name           userName,
+         user_password       userPassword,
+         user_email          userEmail,
+         user_info           userInfo,
+         head_img            headImg,
+         create_time         createTime
+        FROM
+        WHERE id IN
+        <foreach collection="list" open="(" close=")" separator="," item="id" index="i">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectByIdArray" resultType="tk.mybatis.simple.model.SysUser">
+        SELECT
+        id,
+        user_name           userName,
+        user_password       userPassword,
+        user_email          userEmail,
+        user_info           userInfo,
+        head_img            headImg,
+        create_time         createTime
+        FROM
+        WHERE id IN
+        <foreach collection="array" open="(" close=")" separator="," item="id" index="i">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="insertList">
+        INSERT INTO
+        sys_user(user_name , user_password , user_email , user_info , head_img , create_time)
+        VALUES
+        <foreach collection="list" item="user" separator=",">
+            (
+              #{user.userName},#{user.userPassword},#{user.userEmail},
+              #{user.userInfo},#{user.headImg , jdbcType=BLOB},#{user.createTime , jdbcType = TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateByMap">
+        UPDATE sys_user
+        set
+        <foreach collection="_parameter" item="val" index="key" separator=",">
+            ${key} = #{val}
+        </foreach>
+        WHERE id = #{id}
+    </update>
 </mapper>
